@@ -3,7 +3,6 @@
 import scapy.all as scapy
 import argparse
 import time
-import sys
 
 def get_arguments():
     parser = argparse.ArgumentParser()
@@ -36,6 +35,5 @@ while True:
     spoof(options.target, options.spoof)
     spoof(options.spoof,options.target)
     sent_packets += 2
-    print("\r[+] Packets sent: " + str(sent_packets)),
-    sys.stdout.flush()
+    print("\r[+] Packets sent: " + str(sent_packets), end="")
     time.sleep(2)
